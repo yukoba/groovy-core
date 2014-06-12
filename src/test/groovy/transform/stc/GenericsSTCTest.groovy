@@ -1044,7 +1044,6 @@ class GenericsSTCTest extends StaticTypeCheckingTestCase {
     }
 
     // GROOVY-5893
-    @NotYetImplemented
     void testPlusInClosure() {
         assertScript '''
         def list = [1, 2, 3]
@@ -1381,14 +1380,14 @@ class GenericsSTCTest extends StaticTypeCheckingTestCase {
     }
 
     // GROOVY-6504
-    void testInjectMethodWithInitialValueChoosesTheCollectionVersion() {
+    void testInjectMethodWithInitialValueChoosesTheIterableVersion() {
         assertScript '''import org.codehaus.groovy.transform.stc.ExtensionMethodNode
             @ASTTest(phase=INSTRUCTION_SELECTION, value={
                 def method = node.rightExpression.getNodeMetaData(DIRECT_METHOD_CALL_TARGET)
                 assert method.name == 'inject'
                 assert method instanceof ExtensionMethodNode
                 method = method.extensionMethodNode
-                assert method.parameters[0].type == make(Collection)
+                assert method.parameters[0].type == make(Iterable)
             })
             def result = ['a','bb','ccc'].inject(0) { int acc, String str -> acc += str.length(); acc }
             assert  result == 6
