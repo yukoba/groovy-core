@@ -1590,6 +1590,26 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     }
 
     /**
+     * Iterates over every element of an iterable, and checks whether all
+     * elements are <code>true</code> according to the Groovy Truth.
+     * Equivalent to <code>self.every({element -> element})</code>
+     *
+     * @param self the iterable over which we iterate
+     * @return true if every item in the collection matches the closure
+     *         predicate
+     * @since 2.4.0
+     */
+    public static <T> boolean every(Iterable<T> self) {
+        BooleanReturningMethodInvoker bmi = new BooleanReturningMethodInvoker();
+        for (Iterator iter = self.iterator(); iter.hasNext();) {
+            if (!bmi.convertToBoolean(iter.next())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Iterates over the contents of an object or collection, and checks whether a
      * predicate is valid for at least one element.
      *
@@ -1678,6 +1698,25 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     public static boolean any(Object self) {
         BooleanReturningMethodInvoker bmi = new BooleanReturningMethodInvoker();
         for (Iterator iter = InvokerHelper.asIterator(self); iter.hasNext();) {
+            if (bmi.convertToBoolean(iter.next())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Iterates over the elements of an iterable, and checks whether at least
+     * one element is true according to the Groovy Truth.
+     * Equivalent to self.any({element -> element})
+     *
+     * @param self the iterable over which we iterate
+     * @return true if any item in the collection matches the closure predicate
+     * @since 2.4.0
+     */
+    public static <T> boolean any(Iterable<T> self) {
+        BooleanReturningMethodInvoker bmi = new BooleanReturningMethodInvoker();
+        for (Iterator iter = self.iterator(); iter.hasNext();) {
             if (bmi.convertToBoolean(iter.next())) {
                 return true;
             }
