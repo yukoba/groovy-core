@@ -1717,6 +1717,16 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     }
 
     /**
+     * @deprecated Use the Iterable version of grep instead
+     * @see #grep(Iterable, Object)
+     * @since 2.0
+     */
+    @Deprecated
+    public static <T> Collection<T> grep(Collection<T> self, Object filter) {
+        return grep((Iterable<T>) self, filter);
+    }
+
+    /**
      * Iterates over the collection of items and returns each item that matches
      * the given filter - calling the <code>{@link #isCase(java.lang.Object, java.lang.Object)}</code>
      * method used by switch statements.  This method can be used with different
@@ -1735,7 +1745,7 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @return a collection of objects which match the filter
      * @since 2.0
      */
-    public static <T> Collection<T> grep(Collection<T> self, Object filter) {
+    public static <T> Collection<T> grep(Iterable<T> self, Object filter) {
         Collection<T> answer = createSimilarCollection(self);
         BooleanReturningMethodInvoker bmi = new BooleanReturningMethodInvoker("isCase");
         for (T element : self) {
@@ -1796,6 +1806,16 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     }
 
     /**
+     * @deprecated Use the Iterable version of grep instead
+     * @see #grep(Iterable)
+     * @since 2.0
+     */
+    @Deprecated
+    public static <T> Collection<T> grep(Collection<T> self) {
+        return grep((Iterable<T>) self);
+    }
+
+    /**
      * Iterates over the collection returning each element that matches
      * using the IDENTITY Closure as a filter - effectively returning all elements which satisfy Groovy truth.
      * <p>
@@ -1811,7 +1831,7 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 2.0
      */
     @SuppressWarnings("unchecked")
-    public static <T> Collection<T> grep(Collection<T> self) {
+    public static <T> Collection<T> grep(Iterable<T> self) {
         return grep(self, Closure.IDENTITY);
     }
 
@@ -2307,7 +2327,21 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 1.0
      */
     public static <S,T> List<T> collect(Collection<S> self, @ClosureParams(FirstParam.FirstGenericType.class) Closure<T> transform) {
-        return (List<T>) collect(self, new ArrayList<T>(self.size()), transform);
+        return (List<T>) collect((Iterable<S>) self, new ArrayList<T>(self.size()), transform);
+    }
+
+    /**
+     * Iterates through this collection transforming each entry into a new value using the <code>transform</code> closure
+     * returning a list of transformed values.
+     * <pre class="groovyTestCase">assert [2,4,6] == [1,2,3].collect { it * 2 }</pre>
+     *
+     * @param self      a collection
+     * @param transform the closure used to transform each item of the collection
+     * @return a List of the transformed values
+     * @since 2.4.0
+     */
+    public static <S,T> List<T> collect(Iterable<S> self, @ClosureParams(FirstParam.FirstGenericType.class) Closure<T> transform) {
+        return (List<T>) collect(self, new ArrayList<T>(), transform);
     }
 
     /**
@@ -2325,6 +2359,30 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     }
 
     /**
+     * Iterates through this collection transforming each entry into a new value using Closure.IDENTITY
+     * as a transformer, basically returning a list of items copied from the original collection.
+     * <pre class="groovyTestCase">assert [1,2,3] == [1,2,3].collect()</pre>
+     *
+     * @param self    a collection
+     * @return a List of the transformed values
+     * @since 1.8.5
+     * @see Closure#IDENTITY
+     */
+    public static <T> List<T> collect(Iterable<T> self) {
+        return (List<T>) collect(self, Closure.IDENTITY);
+    }
+
+    /**
+     * @deprecated Use the Iterable version of collect instead
+     * @see #collect(Iterable, Collection, Closure)
+     * @since 1.0
+     */
+    @Deprecated
+    public static <T, E> Collection<T> collect(Collection<E> self, Collection<T> collector, @ClosureParams(FirstParam.FirstGenericType.class) Closure<? extends T> transform) {
+        return collect((Iterable<E>) self, collector, transform);
+    }
+
+    /**
      * Iterates through this collection transforming each value into a new value using the <code>transform</code> closure
      * and adding it to the supplied <code>collector</code>.
      * <pre class="groovyTestCase">assert [1,2,3] as HashSet == [2,4,5,6].collect(new HashSet()) { (int)(it / 2) }</pre>
@@ -2335,7 +2393,7 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @return the collector with all transformed values added to it
      * @since 1.0
      */
-    public static <T,E> Collection<T> collect(Collection<E> self, Collection<T> collector, @ClosureParams(FirstParam.FirstGenericType.class) Closure<? extends T> transform) {
+    public static <T,E> Collection<T> collect(Iterable<E> self, Collection<T> collector, @ClosureParams(FirstParam.FirstGenericType.class) Closure<? extends T> transform) {
         for (Object item : self) {
             collector.add(transform.call(item));
             if (transform.getDirective() == Closure.DONE) {
@@ -3011,6 +3069,16 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     }
 
     /**
+     * @deprecated Use the Iterable version of find instead
+     * @see #find(Iterable, Closure)
+     * @since 1.0
+     */
+    @Deprecated
+    public static <T> T find(Collection<T> self, @ClosureParams(FirstParam.FirstGenericType.class) Closure closure) {
+        return find((Iterable<T>) self, closure);
+    }
+
+    /**
      * Finds the first value matching the closure condition.  Example:
      * <pre class="groovyTestCase">def list = [1,2,3]
      * assert 2 == list.find { it > 1 }
@@ -3021,7 +3089,7 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @return the first Object found, in the order of the collections iterator, or null if no element matches
      * @since 1.0
      */
-    public static <T> T find(Collection<T> self, @ClosureParams(FirstParam.FirstGenericType.class) Closure closure) {
+    public static <T> T find(Iterable<T> self, @ClosureParams(FirstParam.FirstGenericType.class) Closure closure) {
         BooleanClosureWrapper bcw = new BooleanClosureWrapper(closure);
         for (T value : self) {
             if (bcw.call(value)) {
@@ -3056,6 +3124,16 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     }
 
     /**
+     * @deprecated Use the Iterable version of find instead
+     * @see #find(Iterable)
+     * @since 1.8.1
+     */
+    @Deprecated
+    public static <T> T find(Collection<T> self) {
+        return find((Iterable<T>) self);
+    }
+
+    /**
      * Finds the first item matching the IDENTITY Closure (i.e.&#160;matching Groovy truth).
      * <p>
      * Example:
@@ -3069,8 +3147,18 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 1.8.1
      * @see Closure#IDENTITY
      */
-    public static <T> T find(Collection<T> self) {
+    public static <T> T find(Iterable<T> self) {
         return find(self, Closure.IDENTITY);
+    }
+
+    /**
+     * @deprecated Use the Iterable version of findResult instead
+     * @see #findResult(Iterable, Object, Closure)
+     * @since 1.0
+     */
+    @Deprecated
+    public static <T, U extends T, V extends T,E> T findResult(Collection<E> self, U defaultResult, @ClosureParams(FirstParam.FirstGenericType.class) Closure<V> closure) {
+        return findResult((Iterable<E>) self, defaultResult, closure);
     }
 
     /**
@@ -3090,10 +3178,20 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @return the first non-null result from calling the closure, or the defaultValue
      * @since 1.7.5
      */
-    public static <T, U extends T, V extends T,E> T findResult(Collection<E> self, U defaultResult, @ClosureParams(FirstParam.FirstGenericType.class) Closure<V> closure) {
+    public static <T, U extends T, V extends T,E> T findResult(Iterable<E> self, U defaultResult, @ClosureParams(FirstParam.FirstGenericType.class) Closure<V> closure) {
         T result = findResult(self, closure);
         if (result == null) return defaultResult;
         return result;
+    }
+
+    /**
+     * @deprecated Use the Iterable version of findResult instead
+     * @see #findResult(Iterable, Closure)
+     * @since 1.7.5
+     */
+    @Deprecated
+    public static <T,U> T findResult(Collection<U> self, @ClosureParams(FirstParam.FirstGenericType.class) Closure<T> closure) {
+        return findResult((Iterable<U>) self, closure);
     }
 
     /**
@@ -3111,7 +3209,7 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @return the first non-null result from calling the closure, or null
      * @since 1.7.5
      */
-    public static <T,U> T findResult(Collection<U> self, @ClosureParams(FirstParam.FirstGenericType.class) Closure<T> closure) {
+    public static <T,U> T findResult(Iterable<U> self, @ClosureParams(FirstParam.FirstGenericType.class) Closure<T> closure) {
         for (Object value : self) {
             T result = closure.call(value);
             if (result != null) {
@@ -3256,6 +3354,16 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     }
 
     /**
+     * @deprecated Use the Iterable version of findAll instead
+     * @see #findAll(Iterable, Closure)
+     * @since 1.5.6
+     */
+    @Deprecated
+    public static <T> Collection<T> findAll(Collection<T> self, @ClosureParams(FirstParam.FirstGenericType.class) Closure closure) {
+        return findAll((Iterable<T>) self, closure);
+    }
+
+    /**
      * Finds all values matching the closure condition.
      * <pre class="groovyTestCase">assert [2,4] == [1,2,3,4].findAll { it % 2 == 0 }</pre>
      *
@@ -3264,7 +3372,7 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @return a Collection of matching values
      * @since 1.5.6
      */
-    public static <T> Collection<T> findAll(Collection<T> self, @ClosureParams(FirstParam.FirstGenericType.class) Closure closure) {
+    public static <T> Collection<T> findAll(Iterable<T> self, @ClosureParams(FirstParam.FirstGenericType.class) Closure closure) {
         Collection<T> answer = createSimilarCollection(self);
         Iterator<T> iter = self.iterator();
         return findAll(closure, answer, iter);
@@ -3288,6 +3396,16 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     }
 
     /**
+     * @deprecated Use the Iterable version of findAll instead
+     * @see #findAll(Iterable)
+     * @since 1.8.1
+     */
+    @Deprecated
+    public static <T> Collection<T> findAll(Collection<T> self) {
+        return findAll((Iterable<T>) self);
+    }
+
+    /**
      * Finds the items matching the IDENTITY Closure (i.e.&#160;matching Groovy truth).
      * <p>
      * Example:
@@ -3301,7 +3419,7 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 1.8.1
      * @see Closure#IDENTITY
      */
-    public static <T> Collection<T>  findAll(Collection<T> self) {
+    public static <T> Collection<T> findAll(Iterable<T> self) {
         return findAll(self, Closure.IDENTITY);
     }
 
@@ -3364,6 +3482,27 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
             }
         }
         return answer;
+    }
+
+    /**
+     * Returns <tt>true</tt> if this iterable contains all of the elements
+     * in the specified array.
+     *
+     * @param  self  a Iterable to be checked for containment
+     * @param  items array to be checked for containment in this collection
+     * @return <tt>true</tt> if this collection contains all of the elements
+     *           in the specified array
+     * @see    Collection#containsAll(Collection)
+     * @since 2.4.0
+     */
+    public static boolean containsAll(Iterable self, Object[] items) {
+        HashSet<Object> set = new HashSet<Object>(Arrays.asList(items));
+        for (Object obj : self) {
+            if (!set.contains(obj)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -3534,6 +3673,16 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     }
 
     /**
+     * @deprecated Use the Iterable version of split instead
+     * @see #split(Iterable, Closure)
+     * @since 1.6.0
+     */
+    @Deprecated
+    public static <T> Collection<Collection<T>> split(Collection<T> self, @ClosureParams(FirstParam.FirstGenericType.class) Closure closure) {
+        return split((Iterable<T>) self, closure);
+    }
+
+    /**
      * Splits all items into two collections based on the closure condition.
      * The first list contains all items which match the closure expression.
      * The second list all those that don't.
@@ -3546,7 +3695,7 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @return a List whose first item is the accepted values and whose second item is the rejected values
      * @since 1.6.0
      */
-    public static <T> Collection<Collection<T>> split(Collection<T> self, @ClosureParams(FirstParam.FirstGenericType.class) Closure closure) {
+    public static <T> Collection<Collection<T>> split(Iterable<T> self, @ClosureParams(FirstParam.FirstGenericType.class) Closure closure) {
         Collection<T> accept = createSimilarCollection(self);
         Collection<T> reject = createSimilarCollection(self);
         Iterator<T> iter = self.iterator();
@@ -3680,6 +3829,15 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
         return collect(permutations(self),function);
     }
 
+    /**
+     * @deprecated Use the Iterable version of eachPermutation instead
+     * @see #eachPermutation(Iterable, Closure)
+     * @since 1.7.0
+     */
+    @Deprecated
+    public static <T> Iterator<List<T>> eachPermutation(Collection<T> self, Closure closure) {
+        return eachPermutation((Iterable<T>) self, closure);
+    }
 
     /**
      * Iterates over all permutations of a collection, running a closure for each iteration.
@@ -3694,7 +3852,7 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @return the permutations from the list
      * @since 1.7.0
      */
-    public static <T> Iterator<List<T>> eachPermutation(Collection<T> self, Closure closure) {
+    public static <T> Iterator<List<T>> eachPermutation(Iterable<T> self, Closure closure) {
         Iterator<List<T>> generator = new PermutationGenerator<T>(self);
         while (generator.hasNext()) {
             closure.call(generator.next());
@@ -4235,6 +4393,15 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
         return closure.call(entry);
     }
 
+    /**
+     * @deprecated Use the Iterable version of inject instead
+     * @see #inject(Iterable, Closure)
+     * @since 1.8.7
+     */
+    @Deprecated
+    public static <T, V extends T> T inject(Collection<T> self, @ClosureParams(value = FromString.class, options = "V,T") Closure<V> closure) {
+        return inject((Iterable<T>) self, closure);
+    }
 
     /**
      * Performs the same function as the version of inject that takes an initial value, but
@@ -4253,15 +4420,28 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @see #inject(Collection, Object, Closure)
      * @since 1.8.7
      */
-    public static <T, V extends T> T inject(Collection<T> self, @ClosureParams(value=FromString.class,options="V,T") Closure<V> closure ) {
-        if( self.isEmpty() ) {
-            throw new NoSuchElementException( "Cannot call inject() on an empty collection without passing an initial value." ) ;
+    public static <T, V extends T> T inject(Iterable<T> self, @ClosureParams(value = FromString.class, options = "V,T") Closure<V> closure) {
+        List<T> list = asList(self);
+        switch (list.size()) {
+            case 0:
+                throw new NoSuchElementException("Cannot call inject() on an empty collection without passing an initial value.");
+            case 1:
+                return list.get(0);
+            default:
+                Iterator<T> iterator = list.iterator();
+                T initialValue = iterator.next();
+                return inject(iterator, initialValue, closure);
         }
-        List<T> list = asList( self ) ;
-        if( list.size() == 1 ) {
-            return list.get( 0 ) ;
-        }
-        return (T) inject( drop( list, 1 ), head( list ), closure );
+    }
+
+    /**
+     * @deprecated Use the Iterable version of inject instead
+     * @see #inject(Iterable, Object, Closure)
+     * @since 1.0
+     */
+    @Deprecated
+    public static <E, T, U extends T, V extends T> T inject(Collection<E> self, U initialValue, @ClosureParams(value = FromString.class, options = "U,E") Closure<V> closure) {
+        return inject((Iterable<E>) self, initialValue, closure);
     }
 
     /**
@@ -4304,8 +4484,8 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @return the result of the last closure call
      * @since 1.0
      */
-    public static <E, T, U extends T, V extends T> T inject(Collection<E> self, U initialValue, @ClosureParams(value=FromString.class,options="U,E") Closure<V> closure) {
-        return (T) inject(self.iterator(), initialValue, closure);
+    public static <E, T, U extends T, V extends T> T inject(Iterable<E> self, U initialValue, @ClosureParams(value = FromString.class, options = "U,E") Closure<V> closure) {
+        return inject(self.iterator(), initialValue, closure);
     }
 
     /**
@@ -6984,6 +7164,27 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     }
 
     /**
+     * Returns the first item from the Iterable.
+     * <pre class="groovyTestCase">
+     * def set = [3, 4, 2] as LinkedHashSet
+     * assert set.head() == 3
+     * // check original is unaltered
+     * assert set == [3, 4, 2] as Set
+     * </pre>
+     * The first element returned by the Iterable's iterator is returned.
+     * If the Iterable doesn't guarantee a defined order it may appear like
+     * a random element is returned.
+     *
+     * @param self an Iterable
+     * @return the first item from the Iterable
+     * @throws NoSuchElementException if the Iterable is empty and you try to access the head() item.
+     * @since 2.4.0
+     */
+    public static <T> T head(Iterable<T> self) {
+        return first(self);
+    }
+
+    /**
      * Returns the first item from the List.
      * <pre class="groovyTestCase">def list = [3, 4, 2]
      * assert list.head() == 3
@@ -7010,6 +7211,26 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      */
     public static <T> T head(T[] self) {
         return first(self);
+    }
+
+    /**
+     * Returns the items from the Iterable excluding the first item.
+     * <pre class="groovyTestCase">def list = [3, 4, 2]
+     * assert list.tail() == [4, 2]
+     * assert list == [3, 4, 2]</pre>
+     *
+     * @param self an Iterable
+     * @return a list without its first element
+     * @throws NoSuchElementException if the iterable is empty and you try to access the tail() item.
+     * @since 2.4.0
+     */
+    public static <T> List<T> tail(Iterable<T> self) {
+        List<T> result = toList(self);
+        if (result.isEmpty()) {
+            throw new NoSuchElementException("Cannot access tail() for an empty Iterable");
+        }
+        result.remove(0);
+        return result;
     }
 
     /**
@@ -7747,6 +7968,27 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     }
 
     /**
+     * Converts this Iterable to a Collection. Returns the original Iterable
+     * if it is already a Collection.
+     * <p>
+     * Example usage:
+     * <pre class="groovyTestCase">
+     * assert new HashSet().asCollection() instanceof Collection
+     * </pre>
+     *
+     * @param self an Iterable to be converted into a Collection
+     * @return a newly created List if this Iterable is not already a Collection
+     * @since 2.4.0
+     */
+    public static <T> Collection<T> asCollection(Iterable<T> self) {
+        if (self instanceof Collection) {
+            return (Collection<T>) self;
+        } else {
+            return toList(self);
+        }
+    }
+
+    /**
      * @deprecated Use the Iterable version of asList instead
      * @see #asList(Iterable)
      * @since 1.0
@@ -8348,6 +8590,22 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     }
 
     /**
+     * Create a Collection as a union of two iterables. If the left iterable
+     * is a Set, then the returned collection will be a Set otherwise a List.
+     * This operation will always create a new object for the result,
+     * while the operands remain unchanged.
+     * <pre class="groovyTestCase">assert [1,2,3,4] == [1,2] + [3,4]</pre>
+     *
+     * @param left  the left Iterable
+     * @param right the right Iterable
+     * @return the merged Collection
+     * @since 2.4.0
+     */
+    public static <T> Collection<T> plus(Iterable<T> left, Iterable<T> right) {
+        return plus(asCollection(left), asCollection(right));
+    }
+
+    /**
      * Create a Collection as a union of a Collection and an Iterable. If the left collection
      * is a Set, then the returned collection will be a Set otherwise a List.
      * This operation will always create a new object for the result,
@@ -8360,7 +8618,7 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @see #plus(Collection, Collection)
      */
     public static <T> Collection<T> plus(Collection<T> left, Iterable<T> right) {
-        return plus(left, toList(right));
+        return plus(left, asCollection(right));
     }
 
     /**
@@ -8460,7 +8718,23 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     }
 
     /**
-     * Create a List composed of the elements of this list, repeated
+     * Create a collection as a union of an Iterable and an Object. If the iterable
+     * is a Set, then the returned collection will be a Set otherwise a List.
+     * This operation will always create a new object for the result,
+     * while the operands remain unchanged.
+     * <pre class="groovyTestCase">assert [1,2,3] == [1,2] + 3</pre>
+     *
+     * @param left  an Iterable
+     * @param right an object to add/append
+     * @return the resulting Collection
+     * @since 2.4.0
+     */
+    public static <T> Collection<T> plus(Iterable<T> left, T right) {
+        return plus(asCollection(left), right);
+    }
+
+    /**
+     * Create a List composed of the elements of this Collection, repeated
      * a certain number of times.  Note that for non-primitive
      * elements, multiple references to the same instance will be added.
      * <pre class="groovyTestCase">assert [1,2,3,1,2,3] == [1,2,3] * 2</pre>
@@ -8477,6 +8751,21 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
             answer.addAll(self);
         }
         return answer;
+    }
+
+    /**
+     * Create a List composed of the elements of this Iterable, repeated
+     * a certain number of times.  Note that for non-primitive
+     * elements, multiple references to the same instance will be added.
+     * <pre class="groovyTestCase">assert [1,2,3,1,2,3] == [1,2,3] * 2</pre>
+     *
+     * @param self   an Iterable
+     * @param factor the number of times to append
+     * @return the multiplied list
+     * @since 2.4.0
+     */
+    public static <T> List<T> multiply(Iterable<T> self, Number factor) {
+        return multiply(asCollection(self), factor);
     }
 
     /**
@@ -8512,6 +8801,20 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
                 result.add(t);
         }
         return result;
+    }
+
+    /**
+     * Create a Collection composed of the intersection of both iterables.  Any
+     * elements that exist in both iterables are added to the resultant collection.
+     * <pre class="groovyTestCase">assert [4,5] == [1,2,3,4,5].intersect([4,5,6,7,8])</pre>
+     *
+     * @param left  an Iterable
+     * @param right an Iterable
+     * @return a Collection as an intersection of both iterables
+     * @since 2.4.0
+     */
+    public static <T> Collection<T> intersect(Iterable<T> left, Iterable<T> right) {
+        return intersect(asCollection(left), asCollection(right));
     }
 
     /**
@@ -10215,6 +10518,25 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     }
 
     /**
+     * Convert an Iterable to a Set. Always returns a new Set
+     * even if the Iterable is already a Set.
+     * <p>
+     * Example usage:
+     * <pre class="groovyTestCase">
+     * def result = [1, 2, 2, 2, 3].toSet()
+     * assert result instanceof Set
+     * assert result == [1, 2, 3] as Set
+     * </pre>
+     *
+     * @param self an Iterable
+     * @return a Set
+     * @since 2.4.0
+     */
+    public static <T> Set<T> toSet(Iterable<T> self) {
+        return toSet(self.iterator());
+    }
+
+    /**
      * Convert an iterator to a Set. The iterator will become
      * exhausted of elements after making this conversion.
      *
@@ -10595,7 +10917,17 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 1.0
      */
     public static String toString(AbstractCollection self) {
-        return toListString(self);
+        return toListString((Iterable) self);
+    }
+
+    /**
+     * @deprecated Use the Iterable version of toListString instead
+     * @see #toListString(Iterable)
+     * @since 1.0
+     */
+    @Deprecated
+    public static String toListString(Collection self) {
+        return toListString((Iterable) self);
     }
 
     /**
@@ -10607,8 +10939,18 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @return the string representation
      * @since 1.0
      */
-    public static String toListString(Collection self) {
+    public static String toListString(Iterable self) {
         return toListString(self, -1);
+    }
+
+    /**
+     * @deprecated Use the Iterable version of toListString instead
+     * @see #toListString(Iterable, int)
+     * @since 1.7.3
+     */
+    @Deprecated
+    public static String toListString(Collection self, int maxSize) {
+        return toListString((Iterable) self, maxSize);
     }
 
     /**
@@ -10621,7 +10963,7 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @return the string representation
      * @since 1.7.3
      */
-    public static String toListString(Collection self, int maxSize) {
+    public static String toListString(Iterable self, int maxSize) {
         return (self == null) ? "null" : InvokerHelper.toListString(self, maxSize);
     }
 

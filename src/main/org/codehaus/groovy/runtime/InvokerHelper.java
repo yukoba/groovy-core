@@ -578,8 +578,8 @@ public class InvokerHelper {
                 return range.toString();
             }
         }
-        if (arguments instanceof Collection) {
-            return formatList((Collection) arguments, verbose, maxSize);
+        if (arguments instanceof Iterable) {
+            return formatList((Iterable) arguments, verbose, maxSize);
         }
         if (arguments instanceof Map) {
             return formatMap((Map) arguments, verbose, maxSize);
@@ -649,11 +649,11 @@ public class InvokerHelper {
         return maxSize == -1 ? maxSize : Math.max(0, maxSize - buffer.length());
     }
 
-    private static String formatList(Collection collection, boolean verbose, int maxSize) {
+    private static String formatList(Iterable collection, boolean verbose, int maxSize) {
         return formatList(collection, verbose, maxSize, false);
     }
 
-    private static String formatList(Collection collection, boolean verbose, int maxSize, boolean safe) {
+    private static String formatList(Iterable collection, boolean verbose, int maxSize, boolean safe) {
         StringBuilder buffer = new StringBuilder("[");
         boolean first = true;
         for (Object item : collection) {
@@ -731,13 +731,31 @@ public class InvokerHelper {
     }
 
     /**
+     * @deprecated Use the Iterable version of toListString instead
+     * @see #toListString(Iterable)
+     */
+    @Deprecated
+    public static String toListString(Collection arg) {
+        return toListString((Iterable) arg);
+    }
+
+    /**
      * A helper method to return the string representation of a list with bracket boundaries "[" and "]".
      *
      * @param arg the collection to process
      * @return the string representation of the collection
      */
-    public static String toListString(Collection arg) {
+    public static String toListString(Iterable arg) {
         return toListString(arg, -1);
+    }
+
+    /**
+     * @deprecated Use the Iterable version of toListString instead
+     * @see #toListString(Iterable, int)
+     */
+    @Deprecated
+    public static String toListString(Collection arg, int maxSize) {
+        return toListString((Iterable) arg, maxSize);
     }
 
     /**
@@ -747,8 +765,17 @@ public class InvokerHelper {
      * @param maxSize stop after approximately this many characters and append '...'
      * @return the string representation of the collection
      */
-    public static String toListString(Collection arg, int maxSize) {
+    public static String toListString(Iterable arg, int maxSize) {
         return toListString(arg, maxSize, false);
+    }
+
+    /**
+     * @deprecated Use the Iterable version of toListString instead
+     * @see #toListString(Iterable, int, boolean)
+     */
+    @Deprecated
+    public static String toListString(Collection arg, int maxSize, boolean safe) {
+        return toListString((Iterable) arg, maxSize, safe);
     }
 
     /**
@@ -759,7 +786,7 @@ public class InvokerHelper {
      * @param safe    whether to use a default object representation for any item in the collection if an exception occurs when generating its toString
      * @return the string representation of the collection
      */
-    public static String toListString(Collection arg, int maxSize, boolean safe) {
+    public static String toListString(Iterable arg, int maxSize, boolean safe) {
         return formatList(arg, false, maxSize, safe);
     }
 
