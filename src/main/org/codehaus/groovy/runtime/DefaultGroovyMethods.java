@@ -29,6 +29,7 @@ import groovy.util.MapEntry;
 import groovy.util.OrderBy;
 import groovy.util.PermutationGenerator;
 import groovy.util.ProxyGenerator;
+import groovy.util.immutable.*;
 import org.codehaus.groovy.classgen.Verifier;
 import org.codehaus.groovy.reflection.ClassInfo;
 import org.codehaus.groovy.reflection.MixinInMetaClass;
@@ -6067,6 +6068,10 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 1.5.0
      */
     public static <K, V> Map<K, V> plus(Map<K, V> left, Map<K, V> right) {
+        if (left instanceof ImmutableMap) {
+            return ((ImmutableMap<K, V>) left).plus(right);
+        }
+
         Map<K, V> map = cloneSimilarMap(left);
         map.putAll(right);
         return map;
@@ -6119,84 +6124,144 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     }
 
     /**
-     * A convenience method for creating an immutable map.
+     * A convenience method for creating an unmodifiable map.
      *
      * @param self a Map
-     * @return an immutable Map
+     * @return an unmodifiable Map
      * @see java.util.Collections#unmodifiableMap(java.util.Map)
      * @since 1.0
      */
-    public static <K,V> Map<K,V> asImmutable(Map<? extends K, ? extends V> self) {
+    public static <K,V> Map<K,V> asUnmodifiable(Map<? extends K, ? extends V> self) {
         return Collections.unmodifiableMap(self);
     }
 
     /**
-     * A convenience method for creating an immutable sorted map.
+     * Deprecated alias for asUnmodifiable.
+     *
+     * @deprecated Use {@link #asUnmodifiable(java.util.Map)}.
+     * @see #asUnmodifiable(java.util.Map)
+     */
+    public static <K,V> Map<K,V> asImmutable(Map<? extends K, ? extends V> self) {
+        return asUnmodifiable(self);
+    }
+
+    /**
+     * A convenience method for creating an unmodifiable sorted map.
      *
      * @param self a SortedMap
-     * @return an immutable SortedMap
+     * @return an unmodifiable SortedMap
      * @see java.util.Collections#unmodifiableSortedMap(java.util.SortedMap)
      * @since 1.0
      */
-    public static <K,V> SortedMap<K,V> asImmutable(SortedMap<K, ? extends V> self) {
+    public static <K,V> SortedMap<K,V> asUnmodifiable(SortedMap<K, ? extends V> self) {
         return Collections.unmodifiableSortedMap(self);
     }
 
     /**
-     * A convenience method for creating an immutable list
+     * Deprecated alias for asUnmodifiable.
+     *
+     * @deprecated Use {@link #asUnmodifiable(java.util.SortedMap)}.
+     * @see #asUnmodifiable(java.util.SortedMap)
+     */
+    public static <K,V> SortedMap<K,V> asImmutable(SortedMap<K, ? extends V> self) {
+        return asUnmodifiable(self);
+    }
+
+    /**
+     * A convenience method for creating an unmodifiable list
      *
      * @param self a List
-     * @return an immutable List
+     * @return an unmodifiable List
      * @see java.util.Collections#unmodifiableList(java.util.List)
      * @since 1.0
      */
-    public static <T> List<T> asImmutable(List<? extends T> self) {
+    public static <T> List<T> asUnmodifiable(List<? extends T> self) {
         return Collections.unmodifiableList(self);
     }
 
     /**
-     * A convenience method for creating an immutable list.
+     * Deprecated alias for asUnmodifiable.
+     *
+     * @deprecated Use {@link #asUnmodifiable(java.util.List)}.
+     * @see #asUnmodifiable(java.util.List)
+     */
+    public static <T> List<T> asImmutable(List<? extends T> self) {
+        return asUnmodifiable(self);
+    }
+
+    /**
+     * A convenience method for creating an unmodifiable list.
      *
      * @param self a Set
-     * @return an immutable Set
+     * @return an unmodifiable Set
      * @see java.util.Collections#unmodifiableSet(java.util.Set)
      * @since 1.0
      */
-    public static <T> Set<T> asImmutable(Set<? extends T> self) {
+    public static <T> Set<T> asUnmodifiable(Set<? extends T> self) {
         return Collections.unmodifiableSet(self);
     }
 
     /**
-     * A convenience method for creating an immutable sorted set.
+     * Deprecated alias for asUnmodifiable.
+     *
+     * @deprecated Use {@link #asUnmodifiable(java.util.Set)}.
+     * @see #asUnmodifiable(java.util.Set)
+     */
+    public static <T> Set<T> asImmutable(Set<? extends T> self) {
+        return asUnmodifiable(self);
+    }
+
+    /**
+     * A convenience method for creating an unmodifiable sorted set.
      *
      * @param self a SortedSet
-     * @return an immutable SortedSet
+     * @return an unmodifiable SortedSet
      * @see java.util.Collections#unmodifiableSortedSet(java.util.SortedSet)
      * @since 1.0
      */
-    public static <T> SortedSet<T> asImmutable(SortedSet<T> self) {
+    public static <T> SortedSet<T> asUnmodifiable(SortedSet<T> self) {
         return Collections.unmodifiableSortedSet(self);
     }
 
     /**
-     * A convenience method for creating an immutable Collection.
+     * Deprecated alias for asUnmodifiable.
+     *
+     * @deprecated Use {@link #asUnmodifiable(java.util.SortedSet)}.
+     * @see #asUnmodifiable(java.util.SortedSet)
+     */
+    public static <T> SortedSet<T> asImmutable(SortedSet<T> self) {
+        return asUnmodifiable(self);
+    }
+
+    /**
+     * A convenience method for creating an unmodifiable Collection.
      * <pre class="groovyTestCase">def mutable = [1,2,3]
-     * def immutable = mutable.asImmutable()
+     * def unmodifiable = mutable.asUnmodifiable()
      * mutable << 4
      * try {
-     *   immutable << 4
+     *   unmodifiable << 4
      *   assert false
      * } catch (UnsupportedOperationException) {
      *   assert true
      * }</pre>
      *
      * @param self a Collection
-     * @return an immutable Collection
+     * @return an unmodifiable Collection
      * @see java.util.Collections#unmodifiableCollection(java.util.Collection)
      * @since 1.5.0
      */
-    public static <T> Collection<T> asImmutable(Collection<? extends T> self) {
+    public static <T> Collection<T> asUnmodifiable(Collection<? extends T> self) {
         return Collections.unmodifiableCollection(self);
+    }
+
+    /**
+     * Deprecated alias for asUnmodifiable.
+     *
+     * @deprecated Use {@link #asUnmodifiable(java.util.Collection)}.
+     * @see #asUnmodifiable(java.util.Collection)
+     */
+    public static <T> Collection<T> asImmutable(Collection<? extends T> self) {
+        return asUnmodifiable(self);
     }
 
     /**
@@ -6984,6 +7049,14 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 1.6.1
      */
     public static <K, V> Map<K, V> plus(Map<K, V> self, Collection<Map.Entry<K, V>> entries) {
+        if (self instanceof ImmutableMap) {
+            ImmutableMap<K, V> immutableMap = (ImmutableMap<K, V>) self;
+            for (Map.Entry<K, V> entry : entries) {
+                immutableMap = immutableMap.plus(entry.getKey(), entry.getValue());
+            }
+            return immutableMap;
+        }
+
         Map<K, V> map = cloneSimilarMap(self);
         putAll(map, entries);
         return map;
@@ -8494,6 +8567,30 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
             stack.addAll(col);
             return (T) stack;
         }
+        if (clazz == ImmutableList.class) {
+            if (col instanceof ImmutableList) return (T) col;
+            return (T) ImmutableCollections.list(col);
+        }
+        if (clazz == ImmutableSet.class) {
+            if (col instanceof ImmutableSet) return (T) col;
+            return (T) ImmutableCollections.set(col);
+        }
+        if (clazz == ImmutableListSet.class) {
+            if (col instanceof ImmutableListSet) return (T) col;
+            return (T) ImmutableCollections.listSet(col);
+        }
+        if (clazz == ImmutableBag.class) {
+            if (col instanceof ImmutableBag) return (T) col;
+            return (T) ImmutableCollections.bag(col);
+        }
+        if (clazz == ImmutableStack.class) {
+            if (col instanceof ImmutableStack) return (T) col;
+            return (T) ImmutableCollections.stack(col);
+        }
+        if (clazz == ImmutableQueue.class) {
+            if (col instanceof ImmutableQueue) return (T) col;
+            return (T) ImmutableCollections.queue(col);
+        }
 
         if (clazz!=String[].class && ReflectionCache.isArray(clazz)) {
             try {
@@ -8543,6 +8640,32 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
         }
         if (clazz == SortedSet.class) {
             return (T) new TreeSet(Arrays.asList(ary));
+        }
+        if (clazz == Queue.class) {
+            return (T) new LinkedList(Arrays.asList(ary));
+        }
+        if (clazz == Stack.class) {
+            final Stack stack = new Stack();
+            stack.addAll(Arrays.asList(ary));
+            return (T) stack;
+        }
+        if (clazz == ImmutableList.class) {
+            return (T) ImmutableCollections.list(Arrays.asList(ary));
+        }
+        if (clazz == ImmutableSet.class) {
+            return (T) ImmutableCollections.set(Arrays.asList(ary));
+        }
+        if (clazz == ImmutableListSet.class) {
+            return (T) ImmutableCollections.listSet(Arrays.asList(ary));
+        }
+        if (clazz == ImmutableBag.class) {
+            return (T) ImmutableCollections.bag(Arrays.asList(ary));
+        }
+        if (clazz == ImmutableStack.class) {
+            return (T) ImmutableCollections.stack(Arrays.asList(ary));
+        }
+        if (clazz == ImmutableQueue.class) {
+            return (T) ImmutableCollections.queue(Arrays.asList(ary));
         }
 
         return asType((Object) ary, clazz);
@@ -8597,6 +8720,11 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      */
     @SuppressWarnings("unchecked")
     public static <T> T asType(Map map, Class<T> clazz) {
+        if (clazz == ImmutableMap.class) {
+            if (map instanceof ImmutableMap) return (T) map;
+            return (T) ImmutableCollections.map(map);
+        }
+
         if (!(clazz.isInstance(map)) && clazz.isInterface() && !Traits.isTrait(clazz)) {
             return (T) Proxy.newProxyInstance(
                     clazz.getClassLoader(),
@@ -8798,6 +8926,10 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 1.5.0
      */
     public static <T> Collection<T> plus(Collection<T> left, Collection<T> right) {
+        if (left instanceof ImmutableCollection) {
+            return ((ImmutableCollection<T>) left).plus(right);
+        }
+
         final Collection<T> answer = cloneSimilarCollection(left, left.size() + right.size());
         answer.addAll(right);
         return answer;
@@ -8864,6 +8996,10 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 1.8.1
      */
     public static <T> List<T> plus(List<T> self, int index, T[] items) {
+        if (self instanceof ImmutableList) {
+            return ((ImmutableList<T>) self).plusAt(index, Arrays.asList(items));
+        }
+
         return plus(self, index, Arrays.asList(items));
     }
 
@@ -8893,6 +9029,10 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 1.8.1
      */
     public static <T> List<T> plus(List<T> self, int index, List<T> additions) {
+        if (self instanceof ImmutableList) {
+            return ((ImmutableList<T>) self).plusAt(index, additions);
+        }
+
         final List<T> answer = new ArrayList<T>(self);
         answer.addAll(index, additions);
         return answer;
@@ -8926,6 +9066,10 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 1.5.0
      */
     public static <T> Collection<T> plus(Collection<T> left, T right) {
+        if (left instanceof ImmutableCollection) {
+            return ((ImmutableCollection<T>) left).plus(right);
+        }
+
         final Collection<T> answer = cloneSimilarCollection(left, left.size() + 1);
         answer.add(right);
         return answer;
@@ -8959,6 +9103,10 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 1.0
      */
     public static <T> List<T> multiply(Collection<T> self, Number factor) {
+        if (self instanceof ImmutableCollection) {
+            return ImmutableCollections.list(multiply(new ArrayList<T>(self), factor));
+        }
+
         int size = factor.intValue();
         List<T> answer = new ArrayList<T>(self.size() * size);
         for (int i = 0; i < size; i++) {
@@ -9330,6 +9478,10 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 1.5.0
      */
     public static <T> Set<T> minus(Set<T> self, Collection<?> removeMe) {
+        if (self instanceof ImmutableSet) {
+            return ((ImmutableSet<T>) self).minus(removeMe);
+        }
+
         Comparator comparator = (self instanceof SortedSet) ? ((SortedSet) self).comparator() : null;
         final Set<T> ansSet = createSimilarSet(self);
         ansSet.addAll(self);
@@ -9368,6 +9520,10 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 1.5.0
      */
     public static <T> Set<T> minus(Set<T> self, Object removeMe) {
+        if (self instanceof ImmutableSet) {
+            return ((ImmutableSet<T>) self).minus(removeMe);
+        }
+
         Comparator comparator = (self instanceof SortedSet) ? ((SortedSet) self).comparator() : null;
         final Set<T> ansSet = createSimilarSet(self);
         for (T t : self) {
@@ -9430,6 +9586,10 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 2.4.0
      */
     public static <T> Collection<T> minus(Collection<T> self, Collection<?> removeMe) {
+        if (self instanceof ImmutableCollection) {
+            return ((ImmutableCollection<T>) self).minus(removeMe);
+        }
+
         Collection<T> ansCollection = createSimilarCollection(self);
         if (self.size() == 0)
             return ansCollection;
@@ -9552,6 +9712,10 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 2.4.0
      */
     public static <T> Collection<T> minus(Iterable<T> self, Object removeMe) {
+        if (self instanceof ImmutableCollection) {
+            return ((ImmutableCollection<T>) self).minus(removeMe);
+        }
+
         Collection<T> ansList = createSimilarCollection(self);
         for (T t : self) {
             if (!coercedEquals(t, removeMe)) ansList.add(t);
@@ -9583,6 +9747,10 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
      * @since 1.7.4
      */
     public static <K,V> Map<K,V> minus(Map<K,V> self, Map removeMe) {
+        if (self instanceof ImmutableMap) {
+            return ((ImmutableMap<K, V>) self).minus(removeMe);
+        }
+
         final Map<K,V> ansMap = createSimilarMap(self);
         ansMap.putAll(self);
         if (removeMe != null && removeMe.size() > 0) {
