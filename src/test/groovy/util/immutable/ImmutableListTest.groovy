@@ -74,14 +74,17 @@ class ImmutableListTest extends GroovyTestCase {
         assert answer.isEmpty() == list.isEmpty()
 
         // getAt
-        for (int i = 0; i < answer.size(); i++) {
+        for (int i = 0; i <= answer.size(); i++) {
             assert answer[i] == list[i]
         }
-        shouldFail(IndexOutOfBoundsException) {
-            list[-1]
+        if (answer.size() > 0) {
+            assert answer[-1] == list[-1]
         }
         shouldFail(IndexOutOfBoundsException) {
-            list[answer.size()]
+            list.get(-1)
+        }
+        shouldFail(IndexOutOfBoundsException) {
+            list.get(answer.size())
         }
 
         // contains, indexOf, lastIndexOf

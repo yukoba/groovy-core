@@ -17,7 +17,7 @@
 package groovy.util.immutable;
 
 /**
- * An immutable, presistent list set like {@link ImmutableSet} but preserves insertion order.
+ * An immutable and presistent list set like {@link ImmutableSet} but preserves insertion order.
  * Persistent equivalent of {@link java.util.LinkedHashSet}.
  * <p/>
  * The elements must be non-null.
@@ -78,17 +78,6 @@ public interface ImmutableListSet<E> extends ImmutableSet<E> {
      * @throws IndexOutOfBoundsException if index &lt; 0 || index &gt;= size()
      */
     E get(int index);
-
-    /**
-     * Same of {@link #get(int)}.
-     * <p/>
-     * Complexity: O(log n)
-     *
-     * @param index index of the element to return
-     * @return the element at the specified position in this list set
-     * @throws IndexOutOfBoundsException if index &lt; 0 || index &gt;= size()
-     */
-    E getAt(int index);
 
     /**
      * Complexity: O(log n)

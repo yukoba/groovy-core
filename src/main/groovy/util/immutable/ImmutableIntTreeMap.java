@@ -20,7 +20,7 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * An efficient persistent map from integer keys to non-null values.
+ * An efficient immutable and persistent map from integer keys to non-null values.
  * <p/>
  * Iteration occurs in the integer order of the keys.
  * <p/>
@@ -126,10 +126,6 @@ final class ImmutableIntTreeMap<V> extends AbstractMap<Integer, V> implements Im
 
     public boolean containsKey(Object key) {
         return key instanceof Integer && root.containsKey((Integer) key);
-    }
-
-    public V getAt(Object key) {
-        return get(key);
     }
 
     public V get(Object key) {

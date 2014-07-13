@@ -19,8 +19,8 @@ package groovy.util.immutable;
 import java.util.Set;
 
 /**
- * An immutable, persistent set, containing no duplicate elements.
- * The elements cannot be null.
+ * An immutable and persistent set, containing no duplicate elements.
+ * The elements must be non-null.
  * <p/>
  * You can create an instance by {@code [] as ImmutableSet}.
  * <p/>

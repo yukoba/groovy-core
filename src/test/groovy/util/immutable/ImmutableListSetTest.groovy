@@ -63,6 +63,20 @@ class ImmutableListSetTest extends GroovyTestCase {
         assert answer.size() == listSet.size()
         assert answer.isEmpty() == listSet.isEmpty()
 
+        // getAt
+        for (int i = 0; i <= answer.size(); i++) {
+            assert answer[i] == listSet[i]
+        }
+        if (answer.size() > 0) {
+            assert answer[-1] == listSet[-1]
+        }
+        shouldFail(IndexOutOfBoundsException) {
+            listSet.get(-1)
+        }
+        shouldFail(IndexOutOfBoundsException) {
+            listSet.get(answer.size())
+        }
+
         // contains
         for (int i = 0; i <= 4; i++) {
             assert answer.contains(i) == listSet.contains(i)

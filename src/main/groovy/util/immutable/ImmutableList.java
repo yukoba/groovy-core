@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * An immutable, persistent list.
+ * An immutable and persistent list.
  * <p/>
  * You can create an instance by {@code [] as ImmutableList}.
  * <p/>
@@ -38,17 +38,6 @@ import java.util.List;
  * @since 2.4.0
  */
 public interface ImmutableList<E> extends ImmutableCollection<E>, List<E> {
-    /**
-     * Same of {@link #get(int)}.
-     * <p/>
-     * Complexity: O(log n)
-     *
-     * @param index index of the element to return
-     * @return the element at the specified position in this list
-     * @throws IndexOutOfBoundsException if index &lt; 0 || index &gt;= size()
-     */
-    E getAt(int index);
-
     /**
      * Complexity: O(log n)
      *

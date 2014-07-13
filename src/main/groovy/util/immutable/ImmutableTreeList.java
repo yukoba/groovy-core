@@ -26,7 +26,7 @@ import java.util.ListIterator;
 import java.util.Map.Entry;
 
 /**
- * A persistent vector. Elements can be null.
+ * An immutable and persistent list. Elements can be null.
  * <p/>
  * This implementation is backed by an ImmutableIntTreeMap and
  * supports logarithmic-time querying, setting, insertion,
@@ -44,7 +44,7 @@ final class ImmutableTreeList<E> extends AbstractList<E> implements ImmutableLis
     private static final long serialVersionUID = -6788530879100442978L;
 
     /**
-     * @return an empty vector
+     * @return an empty list
      */
     @SuppressWarnings("unchecked")
     public static <E> ImmutableTreeList<E> empty() {
@@ -89,11 +89,7 @@ final class ImmutableTreeList<E> extends AbstractList<E> implements ImmutableLis
         if (index < 0 || index >= size())
             throw new IndexOutOfBoundsException();
 
-        return map.getAt(index);
-    }
-
-    public E getAt(int i) {
-        return get(i);
+        return map.get(index);
     }
 
     @Override

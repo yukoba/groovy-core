@@ -22,7 +22,7 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * A simple persistent stack. Elements can be null.
+ * A simple immutable and persistent stack. Elements can be null.
  * <p/>
  * This implementation is thread-safe (assuming Java's AbstractSequentialList is thread-safe),
  * although its iterators may not be.
@@ -95,10 +95,6 @@ final class ImmutableConsStack<E> extends AbstractSequentialList<E> implements I
             throw new IndexOutOfBoundsException();
 
         return subList(i).first;
-    }
-
-    public E getAt(int i) {
-        return get(i);
     }
 
     @Override

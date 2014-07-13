@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
+ * An immutable and persistent set.
+ *
  * @author Yu Kobayashi
  * @since 2.4.0
  */
@@ -68,10 +70,6 @@ final class ImmutableTreeSet<E> extends AbstractSet<E> implements ImmutableListS
     }
 
     public E get(int index) {
-        return getAt(index);
-    }
-
-    public E getAt(int index) {
         return order.get(index);
     }
 

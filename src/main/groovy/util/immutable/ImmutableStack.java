@@ -17,7 +17,7 @@
 package groovy.util.immutable;
 
 /**
- * An immutable, persistent stack.
+ * An immutable and persistent stack.
  * The elements can be null.
  * <p/>
  * You can create an instance by {@code [] as ImmutableStack}.
@@ -35,18 +35,7 @@ package groovy.util.immutable;
  * @author Yu Kobayashi
  * @since 2.4.0
  */
-public interface ImmutableStack<E> extends ImmutableList<E> {
-    /**
-     * Same of {@link #get(int)}.
-     * <p/>
-     * Complexity: O(n)
-     *
-     * @param index index of the element to return
-     * @return the element at the specified position in this stack
-     * @throws IndexOutOfBoundsException if index &lt; 0 || index &gt;= size()
-     */
-    E getAt(int index);
-
+interface ImmutableStack<E> extends ImmutableList<E> {
     /**
      * Complexity: O(n)
      *

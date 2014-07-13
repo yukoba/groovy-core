@@ -19,7 +19,7 @@ package groovy.util.immutable;
 import java.util.Collection;
 
 /**
- * An immutable, persistent collection of elements of type E.
+ * An immutable and persistent collection of elements of type E.
  *
  * @author harold
  * @author Yu Kobayashi

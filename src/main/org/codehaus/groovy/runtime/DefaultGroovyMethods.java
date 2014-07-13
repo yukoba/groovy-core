@@ -5756,6 +5756,26 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     }
 
     /**
+     * Support the subscript operator for an ImmutableListSet.
+     * <pre class="groovyTestCase">def list = [2, "a", 5.3] as ImmutableListSet
+     * assert list[1] == "a"</pre>
+     *
+     * @param self an ImmutableListSet
+     * @param idx  an index
+     * @return the value at the given index
+     * @since 1.0
+     */
+    public static <T> T getAt(ImmutableListSet<T> self, int idx) {
+        int size = self.size();
+        int i = normaliseIndex(idx, size);
+        if (i < size) {
+            return self.get(i);
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Support the subscript operator for an Iterator. The iterator
      * will be partially exhausted up until the idx entry after returning
      * if a +ve or 0 idx is used, or fully exhausted if a -ve idx is used
@@ -8579,17 +8599,9 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
             if (col instanceof ImmutableListSet) return (T) col;
             return (T) ImmutableCollections.listSet(col);
         }
-        if (clazz == ImmutableBag.class) {
-            if (col instanceof ImmutableBag) return (T) col;
-            return (T) ImmutableCollections.bag(col);
-        }
-        if (clazz == ImmutableStack.class) {
-            if (col instanceof ImmutableStack) return (T) col;
-            return (T) ImmutableCollections.stack(col);
-        }
-        if (clazz == ImmutableQueue.class) {
-            if (col instanceof ImmutableQueue) return (T) col;
-            return (T) ImmutableCollections.queue(col);
+        if (clazz == ImmutableDeque.class) {
+            if (col instanceof ImmutableDeque) return (T) col;
+            return (T) ImmutableCollections.deque(col);
         }
 
         if (clazz!=String[].class && ReflectionCache.isArray(clazz)) {
@@ -8658,14 +8670,8 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
         if (clazz == ImmutableListSet.class) {
             return (T) ImmutableCollections.listSet(Arrays.asList(ary));
         }
-        if (clazz == ImmutableBag.class) {
-            return (T) ImmutableCollections.bag(Arrays.asList(ary));
-        }
-        if (clazz == ImmutableStack.class) {
-            return (T) ImmutableCollections.stack(Arrays.asList(ary));
-        }
-        if (clazz == ImmutableQueue.class) {
-            return (T) ImmutableCollections.queue(Arrays.asList(ary));
+        if (clazz == ImmutableDeque.class) {
+            return (T) ImmutableCollections.deque(Arrays.asList(ary));
         }
 
         return asType((Object) ary, clazz);

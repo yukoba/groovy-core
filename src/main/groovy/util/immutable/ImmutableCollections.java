@@ -19,7 +19,7 @@ package groovy.util.immutable;
 import java.util.Map;
 
 /**
- * A static utility class for getting empty immutable collections or creating immutable collections from mutable collections backed by the 'default' implementations.
+ * A static utility class for getting empty immutable and persistent collections or creating immutable and persistent collections from mutable collections backed by the 'default' implementations.
  *
  * @author mtklein
  * @author Yu Kobayashi
@@ -37,7 +37,7 @@ public final class ImmutableCollections {
      *
      * @return an empty immutable stack
      */
-    public static <E> ImmutableStack<E> stack() {
+    static <E> ImmutableStack<E> stack() {
         return ImmutableConsStack.empty();
     }
 
@@ -47,27 +47,27 @@ public final class ImmutableCollections {
      * @param iterable creates from
      * @return the immutable stack
      */
-    public static <E> ImmutableStack<E> stack(Iterable<? extends E> iterable) {
+    static <E> ImmutableStack<E> stack(Iterable<? extends E> iterable) {
         return ImmutableConsStack.from(iterable);
     }
 
     /**
-     * Creates an empty immutable queue.
+     * Creates an empty immutable deque.
      *
-     * @return an empty immutable queue
+     * @return an empty immutable deque
      */
-    public static <E> ImmutableQueue<E> queue() {
-        return ImmutableAmortizedQueue.empty();
+    public static <E> ImmutableDeque<E> deque() {
+        return ImmutableAmortizedDeque.empty();
     }
 
     /**
-     * Creates an immutable queue from an iterable.
+     * Creates an immutable deque from an iterable.
      *
      * @param iterable creates from
-     * @return the immutable queue
+     * @return the immutable deque
      */
-    public static <E> ImmutableQueue<E> queue(Iterable<? extends E> iterable) {
-        return ImmutableAmortizedQueue.from(iterable);
+    public static <E> ImmutableDeque<E> deque(Iterable<? extends E> iterable) {
+        return ImmutableAmortizedDeque.from(iterable);
     }
 
     /**
@@ -132,7 +132,7 @@ public final class ImmutableCollections {
      *
      * @return an empty immutable bag
      */
-    public static <E> ImmutableBag<E> bag() {
+    static <E> ImmutableBag<E> bag() {
         return ImmutableMapBag.empty();
     }
 
@@ -142,7 +142,7 @@ public final class ImmutableCollections {
      * @param iterable creates from
      * @return the immutable bag
      */
-    public static <E> ImmutableBag<E> bag(Iterable<? extends E> iterable) {
+    static <E> ImmutableBag<E> bag(Iterable<? extends E> iterable) {
         return ImmutableMapBag.from(iterable);
     }
 

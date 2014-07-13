@@ -20,7 +20,7 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * A persistent map from non-null keys to non-null values.
+ * An immutable and persistent map from non-null keys to nullable values.
  * <p/>
  * This map uses a given integer map to map hashcodes to lists of elements
  * with the same hashcode. Thus if all elements have the same hashcode, performance
@@ -111,10 +111,6 @@ final class ImmutableTreeMap<K, V> extends AbstractMap<K, V> implements Immutabl
 
     public boolean containsKey(Object key) {
         return keyIndexIn(getEntries(key.hashCode()), key) != -1;
-    }
-
-    public V getAt(Object key) {
-        return get(key);
     }
 
     public V get(Object key) {

@@ -18,7 +18,7 @@ package groovy.util.immutable
 
 class ImmutableStackTest extends GroovyTestCase {
     void testSupportedOperation() {
-        def stack = [] as ImmutableStack<Integer>
+        ImmutableStack<Integer> stack = ImmutableCollections.stack()
         check([], stack)
 
         stack -= 1
@@ -71,14 +71,17 @@ class ImmutableStackTest extends GroovyTestCase {
         assert answer.isEmpty() == list.isEmpty()
 
         // getAt
-        for (int i = 0; i < answer.size(); i++) {
+        for (int i = 0; i <= answer.size(); i++) {
             assert answer[i] == list[i]
         }
-        shouldFail(IndexOutOfBoundsException) {
-            list[-1]
+        if (answer.size() > 0) {
+            assert answer[-1] == list[-1]
         }
         shouldFail(IndexOutOfBoundsException) {
-            list[answer.size()]
+            list.get(-1)
+        }
+        shouldFail(IndexOutOfBoundsException) {
+            list.get(answer.size())
         }
 
         // contains, indexOf, lastIndexOf
@@ -286,8 +289,8 @@ class ImmutableStackTest extends GroovyTestCase {
             assert list == pstack
 
             assert pstack == ImmutableCollections.stack(pstack)
-            assert ([] as ImmutableStack) == pstack - pstack
-            assert pstack == ([] as ImmutableStack) + pstack.reverse()
+            assert ImmutableCollections.stack() == pstack - pstack
+            assert pstack == ImmutableCollections.stack() + pstack.reverse()
 
             assert pstack == ImmutableConsStack.singleton(10).plusAt(1, pstack.reverse()).minusAt(0)
         }

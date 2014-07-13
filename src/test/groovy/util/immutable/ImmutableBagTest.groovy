@@ -21,7 +21,7 @@ package groovy.util.immutable
  */
 class ImmutableBagTest extends GroovyTestCase {
     void testSupportedOperation() {
-        def bag = [] as ImmutableBag<Integer>
+        ImmutableBag<Integer> bag = ImmutableCollections.bag()
         check([], bag)
 
         shouldFail(NullPointerException) {

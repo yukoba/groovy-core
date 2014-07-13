@@ -19,7 +19,7 @@ package groovy.util.immutable;
 import java.util.Map;
 
 /**
- * An immutable, persistent map from non-null keys of type K to nullable values of type V.
+ * An immutable and persistent map from non-null keys of type K to nullable values of type V.
  * <p/>
  * You can create an instance by {@code [:] as ImmutableMap}.
  * <p/>
@@ -37,16 +37,6 @@ import java.util.Map;
  * @since 2.4.0
  */
 public interface ImmutableMap<K, V> extends Map<K, V> {
-    /**
-     * Same of {@link #get(Object)}.
-     * <p/>
-     * Complexity: O(log n)
-     *
-     * @param key the key whose associated value is to be returned
-     * @return the value to which the specified key is mapped, or {@code null} if this map contains no mapping for the key
-     */
-    V getAt(Object key);
-
     /**
      * Complexity: O(log n)
      *

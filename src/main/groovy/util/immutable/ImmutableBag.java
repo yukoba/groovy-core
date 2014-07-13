@@ -17,7 +17,7 @@
 package groovy.util.immutable;
 
 /**
- * An immutable, persistent unordered collection allowing duplicate elements.
+ * An immutable and persistent unordered collection allowing duplicate elements.
  * The elements must be non-null.
  * <p/>
  * You can create an instance by {@code [] as ImmutableBag}.
@@ -35,7 +35,7 @@ package groovy.util.immutable;
  * @author Yu Kobayashi
  * @since 2.4.0
  */
-public interface ImmutableBag<E> extends ImmutableCollection<E> {
+interface ImmutableBag<E> extends ImmutableCollection<E> {
     /**
      * Complexity: O(log n)
      *

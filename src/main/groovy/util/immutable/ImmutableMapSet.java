@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * A map-backed persistent set.
+ * A map-backed immutable and persistent set.
  * <p/>
  * If the backing map is thread-safe, then this implementation is thread-safe
  * (assuming Java's AbstractSet is thread-safe), although its iterators
