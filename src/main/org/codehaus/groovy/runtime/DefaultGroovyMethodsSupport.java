@@ -18,6 +18,7 @@ package org.codehaus.groovy.runtime;
 import groovy.lang.EmptyRange;
 import groovy.lang.IntRange;
 import groovy.lang.Range;
+import groovy.util.GroovyCollection;
 import org.codehaus.groovy.runtime.typehandling.DefaultTypeTransformation;
 
 import java.io.Closeable;
@@ -147,6 +148,9 @@ public class DefaultGroovyMethodsSupport {
     }
 
     protected static <T> Collection<T> createSimilarCollection(Collection<T> orig, int newCapacity) {
+        if (orig instanceof GroovyCollection) {
+            return ((GroovyCollection<T>) orig).createSimilar();
+        }
         if (orig instanceof Set) {
             return createSimilarSet((Set<T>) orig);
         }

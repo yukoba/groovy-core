@@ -24,6 +24,7 @@ import groovy.transform.stc.FromString;
 import groovy.transform.stc.MapEntryOrKeyValue;
 import groovy.transform.stc.SimpleType;
 import groovy.util.ClosureComparator;
+import groovy.util.GroovyCollection;
 import groovy.util.GroovyCollections;
 import groovy.util.MapEntry;
 import groovy.util.OrderBy;
@@ -9059,6 +9060,11 @@ public class DefaultGroovyMethods extends DefaultGroovyMethodsSupport {
     public static <T> T asType(Collection col, Class<T> clazz) {
         if (col.getClass() == clazz) {
             return (T) col;
+        }
+        if (GroovyCollection.class.isAssignableFrom(clazz)) {
+            GroovyCollection result = (GroovyCollection) InvokerHelper.invokeConstructorOf(clazz, null);
+            result.addAll(col);
+            return (T) result;
         }
         if (clazz == List.class) {
             return (T) asList((Iterable) col);
