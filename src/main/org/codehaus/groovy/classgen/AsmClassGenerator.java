@@ -229,7 +229,11 @@ public class AsmClassGenerator extends ClassGenerator {
                 createInterfaceSyntheticStaticFields();
             } else {
                 super.visitClass(classNode);
-                MopWriter mopWriter = new MopWriter(controller);
+                MopWriter.Factory mopWriterFactory = classNode.getNodeMetaData(MopWriter.Factory.class);
+                if (mopWriterFactory==null) {
+                    mopWriterFactory = MopWriter.FACTORY;
+                }
+                MopWriter mopWriter = mopWriterFactory.create(controller);
                 mopWriter.createMopMethods();
                 controller.getCallSiteWriter().generateCallSiteArray();
                 createSyntheticStaticFields();
@@ -1243,6 +1247,9 @@ public class AsmClassGenerator extends ClassGenerator {
     }
 
     protected void createSyntheticStaticFields() {
+        if (referencedClasses.isEmpty()) {
+            return;
+        }
         MethodVisitor mv;
         for (String staticFieldName : referencedClasses.keySet()) {
             // generate a field node
