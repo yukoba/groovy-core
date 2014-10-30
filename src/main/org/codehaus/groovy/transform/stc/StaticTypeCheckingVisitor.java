@@ -19,6 +19,7 @@ import groovy.lang.Closure;
 import groovy.lang.DelegatesTo;
 import groovy.lang.IntRange;
 import groovy.lang.Range;
+import groovy.transform.SelfType;
 import groovy.transform.TypeChecked;
 import groovy.transform.TypeCheckingMode;
 import groovy.transform.stc.ClosureParams;
@@ -63,6 +64,7 @@ import org.codehaus.groovy.runtime.MetaClassHelper;
 import org.codehaus.groovy.syntax.SyntaxException;
 import org.codehaus.groovy.syntax.Token;
 import org.codehaus.groovy.transform.StaticTypesTransformation;
+import org.codehaus.groovy.transform.trait.Traits;
 import org.codehaus.groovy.util.ListHashMap;
 import org.objectweb.asm.Opcodes;
 
@@ -360,6 +362,25 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
             if ((Modifier.isPrivate(mods) && sameModule)
                     || (Modifier.isProtected(mods) && !packageName.equals(enclosingClassNode.getPackageName()))) {
                 addPrivateFieldOrMethodAccess(sameModule? declaringClass : enclosingClassNode, StaticTypesMarker.PV_METHODS_ACCESS, mn);
+            }
+        }
+    }
+
+    private void checkSuperCallFromClosure(Expression call, MethodNode directCallTarget) {
+        if (call instanceof MethodCallExpression && typeCheckingContext.getEnclosingClosure() != null) {
+            Expression objectExpression = ((MethodCallExpression)call).getObjectExpression();
+            if (objectExpression instanceof VariableExpression) {
+                VariableExpression var = (VariableExpression) objectExpression;
+                if (var.isSuperExpression()) {
+                    ClassNode current = typeCheckingContext.getEnclosingClassNode();
+                    LinkedList<MethodNode> list = current.getNodeMetaData(StaticTypesMarker.SUPER_MOP_METHOD_REQUIRED);
+                    if (list == null) {
+                        list = new LinkedList<MethodNode>();
+                        current.putNodeMetaData(StaticTypesMarker.SUPER_MOP_METHOD_REQUIRED, list);
+                    }
+                    list.add(directCallTarget);
+                    call.putNodeMetaData(StaticTypesMarker.SUPER_MOP_METHOD_REQUIRED, current);
+                }
             }
         }
     }
@@ -2326,7 +2347,7 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
     }
 
     private void doInferClosureParameterTypes(final ClassNode receiver, final Expression arguments, final ClosureExpression expression, final MethodNode selectedMethod, final Expression hintClass, final Expression options) {
-        List<ClassNode[]> closureSignatures = getSignaturesFromHint(expression,selectedMethod,hintClass,options);
+        List<ClassNode[]> closureSignatures = getSignaturesFromHint(expression, selectedMethod, hintClass, options);
         List<ClassNode[]> candidates = new LinkedList<ClassNode[]>();
         for (ClassNode[] signature : closureSignatures) {
             // in order to compute the inferred types of the closure parameters, we're using the following trick:
@@ -2954,6 +2975,7 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
             // GROOVY-xxxx
             owners.add(Receiver.<String>make(OBJECT_TYPE));
         }
+        addSelfTypes(receiver, owners);
         if (!typeCheckingContext.temporaryIfBranchTypeInformation.empty()) {
             List<ClassNode> potentialReceiverType = getTemporaryTypesForExpression(objectExpression);
             if (potentialReceiverType != null) {
@@ -2968,6 +2990,13 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
             owners.add(Receiver.<String>make(typeCheckingContext.lastImplicitItType));
         }
         return owners;
+    }
+
+    private void addSelfTypes(final ClassNode receiver, final List<Receiver<String>> owners) {
+        LinkedHashSet<ClassNode> selfTypes = new LinkedHashSet<ClassNode>();
+        for (ClassNode selfType : Traits.collectSelfTypes(receiver, selfTypes)) {
+            owners.add(Receiver.<String>make(selfType));
+        }
     }
 
     protected void checkForbiddenSpreadArgument(ArgumentListExpression argumentList) {
@@ -2992,6 +3021,7 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
     protected void storeTargetMethod(final Expression call, final MethodNode directMethodCallCandidate) {
         call.putNodeMetaData(StaticTypesMarker.DIRECT_METHOD_CALL_TARGET, directMethodCallCandidate);
         checkOrMarkPrivateAccess(directMethodCallCandidate);
+        checkSuperCallFromClosure(call, directMethodCallCandidate);
         extension.onMethodSelection(call, directMethodCallCandidate);
     }
 
@@ -3771,6 +3801,8 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
             VariableExpression vexp = (VariableExpression) exp;
             if (vexp == VariableExpression.THIS_EXPRESSION) return makeThis();
             if (vexp == VariableExpression.SUPER_EXPRESSION) return makeSuper();
+            ClassNode selfTrait = isTraitSelf(vexp);
+            if (selfTrait!=null) return makeSelf(selfTrait);
             final Variable variable = vexp.getAccessedVariable();
             if (variable instanceof FieldNode) {
                 checkOrMarkPrivateAccess((FieldNode) variable);
@@ -3881,6 +3913,17 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
             GenericsType gt = new GenericsType(ret);
             staticRet.setGenericsTypes(new GenericsType[]{gt});
             ret = staticRet;
+        }
+        return ret;
+    }
+
+    private ClassNode makeSelf(ClassNode trait) {
+        ClassNode ret = trait;
+        LinkedHashSet<ClassNode> selfTypes = new LinkedHashSet<ClassNode>();
+        Traits.collectSelfTypes(ret, selfTypes);
+        if (!selfTypes.isEmpty()) {
+            selfTypes.add(ret);
+            ret = new UnionTypeClassNode(selfTypes.toArray(new ClassNode[selfTypes.size()]));
         }
         return ret;
     }
