@@ -1,6 +1,5 @@
 = Contributors
 
-
 The Groovy team would like to thank the contributors of this documentation (by alphabetical order):
 
 * https://github.com/bura[Andrey Bloschetsov]
@@ -14,8 +13,4 @@ The Groovy team would like to thank the contributors of this documentation (by a
 * https://twitter.com/asteingr[André Steingreß]
 * http://grantmcconnaughey.github.io/[Grant McConnaughey]
 
-= License
-
-This work is licensed under a http://creativecommons.org/licenses/by-sa/3.0/deed.en[Creative Commons Attribution-ShareAlike 3.0 Unported License].
-
-image::http://i.creativecommons.org/l/by-sa/3.0/88x31.png[Creative Commons BY-SA]
+If you can offer time to improve groovy or our documentation, link:groovy-contributions.html[read this tutorial].

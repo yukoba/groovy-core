@@ -52,4 +52,36 @@ class InnerInterfaceTest extends GroovyTestCase {
             assert Foo4422V3.Baz != null
         """
     }
+
+    // GROOVY-5989
+    void testReferenceToInterfaceNestedInterface() {
+        assertScript '''
+            class MyMap extends HashMap {
+                // Entry not just Map.Entry should work on next line
+                Entry firstEntry() { entrySet().iterator().next() }
+                static void main(args) {
+                    def m = new MyMap()
+                    m.a = 42
+                    assert m.firstEntry().toString() == 'a=42'
+                }
+            }
+        '''
+    }
+
+    // GROOVY-5754
+    void testResolveInnerInterface() {
+        assertScript '''
+            class Usage implements Koo {
+              static class MyInner extends Inner {}
+            }
+
+            public interface Koo {
+
+                class Inner {
+                }
+
+            }
+            Koo.Inner
+        '''
+    }
 }

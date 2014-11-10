@@ -2136,6 +2136,19 @@ d.foo()
 '''
     }
 
+    // GROOVY-7123
+    void testHelperSetterShouldNotReturnVoid() {
+        assertScript '''
+            trait A {
+                def foo
+                def bar() { foo = 42 }
+            }
+            class C implements A {}
+
+            assert new C().bar() == 42
+        '''
+    }
+
     static trait TestTrait {
         int a() { 123 }
     }
@@ -2274,6 +2287,47 @@ bob.sendMessage(alice,'secret')
 class SecurityService {
     static void check(Device d) { if (d.id==null) throw new SecurityException() }
 }
+'''
+    }
+
+    void testRuntimeSelfType() {
+        assertScript '''import groovy.transform.CompileStatic
+import groovy.transform.SelfType
+
+trait A {
+    int a() { 1 }
+}
+
+@CompileStatic
+@SelfType(A)
+trait B {
+    int b() { 2*a() }
+}
+class C implements A {}
+def c = new C() as B
+assert c.b() == 2
+'''
+    }
+
+    void testRuntimeSelfTypeWithInheritance() {
+        assertScript '''import groovy.transform.CompileStatic
+import groovy.transform.SelfType
+
+trait A {
+    int a() { 1 }
+}
+
+@CompileStatic
+@SelfType(A)
+trait B {
+    int b() { 2*a() }
+}
+
+trait B2 extends B {}
+
+class C implements A {}
+def c = new C() as B2
+assert c.b() == 2
 '''
     }
     void testAnnotationsOfPrecompiledTrait() {
