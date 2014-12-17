@@ -422,5 +422,34 @@ assert o.blah() == 'outer'
         assert !mopMethods.empty
     }
 
+    // GROOVY-7124
+    void testUseInvokeVirtualPreferredOverInvokeInterface() {
+        assert compile([method: 'foo',classNamePattern:'B'], '''
+        interface A { void m() }
+        class B implements A {
+            void m() {}
+            @groovy.transform.CompileStatic
+            void foo() {
+                m()
+            }
+        }
 
+        ''').hasStrictSequence(['INVOKEVIRTUAL B.m'])
+    }
+
+    void testShouldNotTryToCastToSupposedDelegateType() {
+        assertScript '''
+            @groovy.transform.CompileStatic
+            class ClassCastOhNoes {
+               def foo(def o) {
+                   def cl = {
+                       delegate.getClass()
+                   }
+                   cl.delegate = o
+                   cl()
+               }
+            }
+            new ClassCastOhNoes().foo(100)
+        '''
+    }
 }

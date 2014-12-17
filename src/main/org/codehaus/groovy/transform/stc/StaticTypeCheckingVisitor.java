@@ -161,6 +161,8 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
         });
     }
 
+    private static final String[] EMPTY_STRING_ARRAY = new String[0];
+
     protected final ReturnAdder.ReturnStatementListener returnListener = new ReturnAdder.ReturnStatementListener() {
         public void returnStatementAdded(final ReturnStatement returnStatement) {
             ClassNode returnType = checkReturnType(returnStatement);
@@ -706,6 +708,26 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
         call.setImplicitThis(false);
         visitMethodCallExpression(call);
         MethodNode directSetterCandidate = call.getNodeMetaData(StaticTypesMarker.DIRECT_METHOD_CALL_TARGET);
+        if (directSetterCandidate==null) {
+            // this may happen if there's a setter of type boolean/String/Class, and that we are using the property
+            // notation AND that the RHS is not a boolean/String/Class
+            for (MethodNode setter : setterInfo.setters) {
+                ClassNode type = getWrapper(setter.getParameters()[0].getOriginType());
+                if (Boolean_TYPE.equals(type) || STRING_TYPE.equals(type) || CLASS_Type.equals(type)) {
+                    call = new MethodCallExpression(
+                            ve,
+                            setterInfo.name,
+                            new CastExpression(type,rightExpression)
+                    );
+                    call.setImplicitThis(false);
+                    visitMethodCallExpression(call);
+                    directSetterCandidate = call.getNodeMetaData(StaticTypesMarker.DIRECT_METHOD_CALL_TARGET);
+                    if (directSetterCandidate!=null) {
+                        break;
+                    }
+                }
+            }
+        }
         if (directSetterCandidate != null) {
             for (MethodNode setter : setterInfo.setters) {
                 if (setter == directSetterCandidate) {
@@ -989,6 +1011,8 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
     }
 
     protected void checkGroovyConstructorMap(final Expression receiver, final ClassNode receiverType, final MapExpression mapExpression) {
+        // workaround for map-style checks putting setter info on wrong AST nodes
+        typeCheckingContext.pushEnclosingBinaryExpression(null);
         for (MapEntryExpression entryExpression : mapExpression.getMapEntryExpressions()) {
             Expression keyExpr = entryExpression.getKeyExpression();
             if (!(keyExpr instanceof ConstantExpression)) {
@@ -1010,6 +1034,7 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
                 }
             }
         }
+        typeCheckingContext.popEnclosingBinaryExpression();
     }
 
     protected static boolean hasRHSIncompleteGenericTypeInfo(final ClassNode inferredRightExpressionType) {
@@ -2495,7 +2520,7 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
 
     private static String[] convertToStringArray(final Expression options) {
         if (options==null) {
-            return new String[0];
+            return EMPTY_STRING_ARRAY;
         }
         if (options instanceof ConstantExpression) {
             return new String[] { options.getText() };
@@ -2951,7 +2976,7 @@ public class StaticTypeCheckingVisitor extends ClassCodeVisitorSupport {
     private void addArrayMethods(List<MethodNode> methods, ClassNode receiver, String name, ClassNode[] args) {
         if (args.length!=1) return;
         if (!receiver.isArray()) return;
-        if (!isIntCategory(args[0])) return;
+        if (!isIntCategory(getUnwrapper(args[0]))) return;
         if ("getAt".equals(name)) {
             MethodNode node = new MethodNode(name, Opcodes.ACC_PUBLIC, receiver.getComponentType(), new Parameter[]{new Parameter(args[0],"arg")}, null, null);
             node.setDeclaringClass(receiver.redirect());
