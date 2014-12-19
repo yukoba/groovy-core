@@ -418,17 +418,17 @@ class ListTest extends GroovyTestCase {
         assert [["a", 5], ["b", 6]] == ["a", "b"].withIndex(5)
         assert ["0: a", "1: b"] == ["a", "b"].withIndex().collect { str, idx -> "$idx: $str" }
         assert ["1: a", "2: b"] == ["a", "b"].withIndex(1).collect { str, idx -> "$idx: $str" }
-        assert [:] == [].indexed()
-        assert [:] == [].indexed(10)
-        assert [0: 'a', 1: 'b'] == ["a", "b"].indexed()
-        assert [5: 'a', 6: 'b'] == ["a", "b"].indexed(5)
-        assert ["0: a", "1: b"] == ["a", "b"].indexed().collect { idx, str -> "$idx: $str" }
-        assert ["1: a", "2: b"] == ["a", "b"].indexed(1).collect { idx, str -> "$idx: $str" }
+        assert [:] == [].toMap()
+        assert [:] == [].toMap(10)
+        assert [0: 'a', 1: 'b'] == ["a", "b"].toMap()
+        assert [5: 'a', 6: 'b'] == ["a", "b"].toMap(5)
+        assert ["0: a", "1: b"] == ["a", "b"].toMap().collect { idx, str -> "$idx: $str" }
+        assert ["1: a", "2: b"] == ["a", "b"].toMap(1).collect { idx, str -> "$idx: $str" }
     }
 
     @TypeChecked
     void testWithIndex_indexed_typeChecked_groovy7175() {
-        assert ["A", "BB"] == ["a", "b"].indexed(1).collect { idx, str -> str.toUpperCase() * idx }
+        assert ["A", "BB"] == ["a", "b"].toMap(1).collect { idx, str -> str.toUpperCase() * idx }
     }
 
     // GROOVY-4946
