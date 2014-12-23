@@ -13,23 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package groovy.lang;
 
-/**
- * Represents a list of 2 typed Objects.
- */
-public class Tuple2<T1, T2> extends Tuple {
-    public Tuple2(T1 first, T2 second) {
-        super(new Object[]{first, second});
-    }
+package org.codehaus.groovy.transform.traitx
 
-    @SuppressWarnings("unchecked")
-    public T1 getFirst() {
-        return (T1) get(0);
-    }
+class Groovy7214Bug extends GroovyTestCase {
+    void testShouldAllowPrivateStaticMethodCallInTrait() {
+        assertScript '''
+            trait SomeTrait {
+                private static int magic = 0
 
-    @SuppressWarnings("unchecked")
-    public T2 getSecond() {
-        return (T2) get(1);
+                static getSomeValue() {
+                    someHelperMethod()
+                    magic
+                }
+
+                private static someHelperMethod() {
+                    magic = 42
+                }
+            }
+            class SomeClass implements SomeTrait {}
+
+            assert SomeClass.someValue == 42'''
     }
 }
